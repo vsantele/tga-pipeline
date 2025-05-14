@@ -166,7 +166,7 @@ $POLYMORPHISM"""
 
     override fun report(): TestSuite {
         // first, kill any running Gradle daemons left from the execution
-        executeProcess("/bin/sh", "${TEST_SPARK_HOME.resolve("gradlew")}", "--stop")
+//        executeProcess("/bin/sh", "${TEST_SPARK_HOME.resolve("gradlew")}", "--stop")
 
         val testSrcPath = outputDirectory
         val tests = getTestCasesFromSrcPath(testSrcPath)
