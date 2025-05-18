@@ -161,6 +161,7 @@ $POLYMORPHISM"""
             log.error("TestSpark was interrupted on target $target")
         } finally {
             log.debug(process?.inputStream?.bufferedReader()?.readText())
+            cleanProject(root)
             process?.terminateOrKill(attempts = 10U, waitTime = 500.milliseconds)
         }
     }
@@ -191,5 +192,33 @@ $POLYMORPHISM"""
             .collect(Collectors.toList())
         log.debug("TestSpark generated test cases: {}", individualTestCases)
         return individualTestCases
+    }
+
+    private fun cleanProject(root: Path) {
+        try {
+            val processCmd: Array<String> = if (root.resolve("gradlew").toFile().exists()) {
+                log.debug("Cleaning project with gradlew")
+                arrayOf("/bin/sh", "${root.resolve("gradlew").toAbsolutePath()}", "clean")
+            } else if (root.resolve("mvnw").toFile().exists()) {
+                log.debug("Cleaning project with mvnw")
+                arrayOf("/bin/sh", "${root.resolve("mvnw").toAbsolutePath()}", "clean")
+            } else if (root.resolve("pom.xml").toFile().exists()) {
+                log.debug("Cleaning project with mvn")
+                arrayOf("/bin/sh", "${root.resolve("mvn").toAbsolutePath()}", "clean")
+            } else {
+                log.debug("Skipping project clean up")
+                emptyArray()
+            }
+            if (processCmd.isNotEmpty()) {
+                val process = buildProcess(*processCmd) {
+                    directory(root.toFile())
+                }
+                process.waitFor()
+                log.debug("Process output:\n${process.inputStream.bufferedReader().readText()}")
+            }
+            log.debug("Project clean up has been completed")
+        } catch (e: Exception) {
+            log.error("Failed to clean project: ${e.message}")
+        }
     }
 }
