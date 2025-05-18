@@ -113,7 +113,6 @@ $POLYMORPHISM"""
     override fun run(target: String, timeLimit: Duration, outputDirectory: Path) {
         // first, kill any running Gradle daemons left from the execution
         executeProcess("/bin/sh", "${TEST_SPARK_HOME.resolve("gradlew")}", "--stop")
-        executeProcess("/bin/sh", "${TEST_SPARK_HOME.resolve("gradlew")}", "clean")
 
         this.outputDirectory = outputDirectory.also {
             it.toFile().mkdirs()
