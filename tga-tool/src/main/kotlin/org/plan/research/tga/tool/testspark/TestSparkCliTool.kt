@@ -229,7 +229,7 @@ $POLYMORPHISM"""
             val GRADLE_HOME = System.getenv("GRADLE_USER_HOME")
             val fullPath = "$GRADLE_HOME/caches/$GRADLE_VERSION/transforms/$IDEA_TRANSFORM_CACHE_ID-*"
             log.debug("Deleting IDEA transform cache: {}", fullPath)
-            executeProcess("rm", "-r", fullPath)
+            executeProcess("/bin/sh", "rm", "-r", fullPath)
         } catch (e: Exception) {
             log.error("Failed to clean project: ${e.message}")
         }
