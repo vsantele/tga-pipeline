@@ -228,8 +228,24 @@ $POLYMORPHISM"""
             val GRADLE_VERSION = "8.9"
             val GRADLE_HOME = System.getenv("GRADLE_USER_HOME")
             val fullPath = "$GRADLE_HOME/caches/$GRADLE_VERSION/transforms/$IDEA_TRANSFORM_CACHE_ID-*"
-            log.debug("Deleting IDEA transform cache: {}", fullPath)
-            executeProcess("/bin/sh", "rm", "-r", fullPath)
+            val transformsDir = Paths.get(GRADLE_HOME, "caches", GRADLE_VERSION, "transforms")
+            if (Files.exists(transformsDir)) {
+                // IDEA_TRANSFORM_CACHE_ID-* pattern match
+                val matcher = Regex("^${IDEA_TRANSFORM_CACHE_ID}-.*")
+                Files.list(transformsDir).use { paths ->
+                    paths.filter { path -> matcher.matches(path.fileName.toString()) }
+                        .forEach { path ->
+                            log.debug("Deleting IDEA transform cache: {}", path)
+                            try {
+                                // Recursively delete directory or file
+                                path.toFile().deleteRecursively()
+                            } catch (e: Exception) {
+                                log.error("Failed to delete ${path}: ${e.message}")
+                            }
+                        }
+                }
+            }
+
         } catch (e: Exception) {
             log.error("Failed to clean project: ${e.message}")
         }
