@@ -161,6 +161,7 @@ $POLYMORPHISM"""
         } finally {
             log.debug(process?.inputStream?.bufferedReader()?.readText())
             cleanProject(root)
+            cleanIdeIntall()
             process?.terminateOrKill(attempts = 10U, waitTime = 500.milliseconds)
         }
     }
@@ -216,6 +217,17 @@ $POLYMORPHISM"""
                 log.debug("Process output:\n${process.inputStream.bufferedReader().readText()}")
             }
             log.debug("Project clean up has been completed")
+        } catch (e: Exception) {
+            log.error("Failed to clean project: ${e.message}")
+        }
+    }
+
+    private fun cleanIdeIntall() {
+        try {
+            val IDEA_TRANSFORM_CACHE_ID = "171d22bf30ca729299def96749c1f352"
+            val GRADLE_HOME = System.getenv("GRADLE_USER_HOME")
+            val GRADLE_VERSION = "8.9"
+            executeProcess("rm", "-r", "$GRADLE_HOME/caches/$GRADLE_VERSION/transforms/$IDEA_TRANSFORM_CACHE_ID-*")
         } catch (e: Exception) {
             log.error("Failed to clean project: ${e.message}")
         }
