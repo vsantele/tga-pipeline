@@ -226,7 +226,8 @@ $POLYMORPHISM"""
         try {
             val IDEA_TRANSFORM_CACHE_ID = "171d22bf30ca729299def96749c1f352"
             val GRADLE_VERSION = "8.9"
-            val fullPath = "\$GRADLE_USER_HOME/caches/$GRADLE_VERSION/transforms/$IDEA_TRANSFORM_CACHE_ID-*"
+            val GRADLE_HOME = System.getenv("GRADLE_USER_HOME")
+            val fullPath = "$GRADLE_HOME/caches/$GRADLE_VERSION/transforms/$IDEA_TRANSFORM_CACHE_ID-*"
             log.debug("Deleting IDEA transform cache: {}", fullPath)
             executeProcess("rm", "-r", fullPath)
         } catch (e: Exception) {
