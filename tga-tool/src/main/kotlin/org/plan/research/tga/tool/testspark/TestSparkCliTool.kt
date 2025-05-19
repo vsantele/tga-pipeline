@@ -227,7 +227,6 @@ $POLYMORPHISM"""
             val IDEA_TRANSFORM_CACHE_ID = "171d22bf30ca729299def96749c1f352"
             val GRADLE_VERSION = "8.9"
             val GRADLE_HOME = System.getenv("GRADLE_USER_HOME")
-            val fullPath = "$GRADLE_HOME/caches/$GRADLE_VERSION/transforms/$IDEA_TRANSFORM_CACHE_ID-*"
             val transformsDir = Paths.get(GRADLE_HOME, "caches", GRADLE_VERSION, "transforms")
             if (Files.exists(transformsDir)) {
                 // IDEA_TRANSFORM_CACHE_ID-* pattern match
