@@ -225,9 +225,8 @@ $POLYMORPHISM"""
     private fun cleanIdeIntall() {
         try {
             val IDEA_TRANSFORM_CACHE_ID = "171d22bf30ca729299def96749c1f352"
-            val GRADLE_HOME = System.getenv("GRADLE_USER_HOME")
             val GRADLE_VERSION = "8.9"
-            executeProcess("rm", "-r", "$GRADLE_HOME/caches/$GRADLE_VERSION/transforms/$IDEA_TRANSFORM_CACHE_ID-*")
+            executeProcess("rm", "-r", "\$GRADLE_USER_HOME/caches/$GRADLE_VERSION/transforms/$IDEA_TRANSFORM_CACHE_ID-*")
         } catch (e: Exception) {
             log.error("Failed to clean project: ${e.message}")
         }
