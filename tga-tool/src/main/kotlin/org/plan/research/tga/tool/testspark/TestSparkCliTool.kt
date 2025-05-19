@@ -243,6 +243,8 @@ $POLYMORPHISM"""
                             }
                         }
                 }
+            } else {
+                log.debug("No IDEA transforms found in {}", transformsDir)
             }
 
         } catch (e: Exception) {
