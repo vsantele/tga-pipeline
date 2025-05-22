@@ -20,6 +20,11 @@ task<JavaExec>("runCoverage") {
     mainClass.set("org.plan.research.tga.analysis.coverage.jacoco.MainKt")
 }
 
+task<JavaExec>("runMetrics") {
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("org.plan.research.tga.analysis.metrics.MetricsKt")
+}
+
 val analysisTask = task<Jar>("analysisJar") {
     manifest {
         attributes["Main-Class"] = "org.plan.research.tga.analysis.MainKt"
