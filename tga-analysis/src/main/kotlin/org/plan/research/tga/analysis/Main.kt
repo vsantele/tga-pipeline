@@ -205,7 +205,7 @@ fun main(args: Array<String>) {
                         }
                     }
                     allJobs.awaitAll()
-                    Paths.get("$tool-$runName-$iteration.csv").bufferedWriter().use {
+                    resultsDir.resolve("$tool-$runName-$iteration.csv").bufferedWriter().use {
                         it.write(allData.joinToString("\n"))
                     }
                 }
