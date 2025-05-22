@@ -100,7 +100,7 @@ fun main(args: Array<String>) {
                     }
                 }
 
-                val benchmarkDir = input.resolve("$runName-$iteration", fixedLine[3])
+                val benchmarkDir = input.resolve(tool, "$runName-$iteration", fixedLine[3])
                 val prePatchFailures = tryOrNull {
                     getJsonSerializer(pretty = true)
                         .decodeFromString<Set<StackTrace>>(benchmarkDir.resolve("failures.json").readText())
