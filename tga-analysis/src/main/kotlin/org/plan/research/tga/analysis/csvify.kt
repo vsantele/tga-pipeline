@@ -27,7 +27,8 @@ import kotlin.io.path.readText
 fun main(args: Array<String>) {
     val input = Paths.get(args[0])
     val benchmarks =
-        JsonBenchmarkProvider(Paths.get("benchmarks/benchmarks.json")).benchmarks().associateBy { it.buildId }
+        JsonBenchmarkProvider(Paths.get("C:\\Users\\victo\\OneDrive - Université de Namur\\Cours\\Memoire\\experiments\\thesis-stats\\data\\benchmarks.json")).benchmarks()
+            .associateBy { it.buildId }
     val benchmarkProperties = tryOrNull {
         getJsonSerializer(pretty = true)
             .decodeFromString<List<Properties>>(Paths.get("properties.json").readText())
@@ -35,13 +36,23 @@ fun main(args: Array<String>) {
     } ?: emptyMap()
     val metricsProvider = MetricsProvider(Paths.get("metrics.json"), Paths.get("cyclomatic-complexity.txt"))
 
+    val benchmarkPropertiesHeaderList = mapOf(
+      "Internal package" to "package",
+      "Number of internal dependencies" to "internal dependencies",
+      "Number of stdlib dependencies" to "stdlib dependencies",
+      "Number of external dependencies" to "external dependencies",
+      "Language" to "language",
+      "Comments" to "comments",
+      "Java docs" to "java docs",
+      "SLoC" to "sloc"
+    )
     val header = "tool,runName,iteration,benchmark buildId,benchmark klass," +
             "compiled tests,total tests,compilation rate," +
             "covered lines,total lines,line coverage," +
             "covered branches,total branches,branch coverage," +
             "killed mutants,total mutants,mutation score," +
-            "package,internal dependencies,stdlib dependencies,external dependencies," +
-            "language,comments,java docs,sloc,failure reproduction,cyclomatic complexity"
+            benchmarkPropertiesHeaderList.values.joinToString(separator = ",") + ","+
+            "failure reproduction,cyclomatic complexity"
     val valueTypes = listOf(
         "PrimitiveModel" to PrimitiveModel,
         "NullModel" to NullModel,
@@ -56,7 +67,7 @@ fun main(args: Array<String>) {
 
     val fullHeader = header + "," + valueTypes.joinToString(separator = ",") { it.first }
 
-    val newCsv = Paths.get("Jazzer-metrics-full-default.csv").bufferedWriter().use { writer ->
+    val newCsv = Paths.get("TestSpark-metrics-baseline.csv").bufferedWriter().use { writer ->
         writer.write(fullHeader)
         writer.write("\n")
 
@@ -70,7 +81,14 @@ fun main(args: Array<String>) {
                 if (fixedLine[3] !in benchmarkProperties) {
                     continue
                 }
-                fixedLine.addAll(benchmarkProperties[fixedLine[3]]!!.toList().map { it.second })
+                fixedLine.addAll(benchmarkPropertiesHeaderList.map {
+                    if(benchmarkProperties[fixedLine[3]]!![it.key] == null) {
+                        ""
+                    } else {
+                        benchmarkProperties[fixedLine[3]]!![it.key]!!
+                    }
+                })
+//                fixedLine.addAll(benchmarkProperties[fixedLine[3]]!!.toList().map { it.second })
 
                 if (fixedLine[3] !in benchmarks) {
                     continue
@@ -85,15 +103,16 @@ fun main(args: Array<String>) {
                 val benchmarkDir = input.resolve("$runName-$iteration", fixedLine[3])
                 val prePatchFailures = tryOrNull {
                     getJsonSerializer(pretty = true)
-                        .decodeFromString<Set<StackTrace>>(benchmarkDir.resolve("evosuite-tests", "failures.json").readText())
+                        .decodeFromString<Set<StackTrace>>(benchmarkDir.resolve("failures.json").readText())
                 } ?: emptySet()
                 val patchFailures = tryOrNull {
                     getJsonSerializer(pretty = true)
-                        .decodeFromString<Set<StackTrace>>(benchmarkDir.resolve("evosuite-tests", "failures-patched.json").readText())
+                        .decodeFromString<Set<StackTrace>>(benchmarkDir.resolve("failures-patched.json").readText())
                 } ?: emptySet()
 
                 val diff = (patchFailures - prePatchFailures) + (prePatchFailures - patchFailures)
-                fixedLine.add(when {
+                fixedLine.add(
+                    when {
                     diff.any { "AssertionError" in it.throwable } -> "100.00"
 //                    diff.isNotEmpty() -> "50.00"
                     else -> "0.00"
