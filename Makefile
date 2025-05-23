@@ -29,6 +29,10 @@ runner: pipeline
 	docker build -f dockerfiles/runner.docker -t abdullin/tga-pipeline:runner-latest .
 	docker tag abdullin/tga-pipeline:runner-latest abdullin/tga-pipeline:runner-${VERSION}
 
+analysis: pipeline
+	docker build -f dockerfiles/analysis.docker -t abdullin/tga-pipeline:analysis-latest .
+	docker tag abdullin/tga-pipeline:analysis-latest abdullin/tga-pipeline:analysis-${VERSION}
+
 publish: pipeline runner tools
 	docker push abdullin/tga-pipeline:base-latest
 	docker push abdullin/tga-pipeline:base-${VERSION}

@@ -1,0 +1,9 @@
+FROM abdullin/tga-pipeline:base-latest
+LABEL org.opencontainers.image.authors="Victor Santelé <contact@vsantele.dev>"
+
+# run pipeline
+USER root
+WORKDIR /tga-pipeline
+RUN ./gradlew :tga-analysis:build
+
+ENTRYPOINT ["java", "-jar", "/tga-pipeline/tga-analysis/build/libs/tga-analysis.jar","--benchmarksPath", "/var/benchmarks/gitbug", "--benchmarksPatchedPath", "/var/benchmarks/gitbug-patched/benchmarks.json", "--resultsPath", "/var/results"]
