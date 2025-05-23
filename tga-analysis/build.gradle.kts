@@ -23,6 +23,7 @@ task<JavaExec>("runCoverage") {
 task<JavaExec>("runMetrics") {
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("org.plan.research.tga.analysis.metrics.MetricsKt")
+    workingDir = rootDir
 }
 
 val analysisTask = task<Jar>("analysisJar") {
